@@ -1,6 +1,8 @@
 package co.credit.app.r2dbc.config;
 
-//@ConfigurationProperties(prefix = "adapters.r2dbc")
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties(prefix = "r2dbc")
 public record MysqlConnectionProperties (
     String host,
     Integer port,

@@ -25,8 +25,7 @@ public class MyReactiveRepositoryAdapter
 
   @Override
   public Mono<Void> saveLoan(Loan loan) {
-    repository.save(toData(loan));
-    return Mono.empty();
+    return repository.save(toData(loan)).then();
   }
 
   @Override
