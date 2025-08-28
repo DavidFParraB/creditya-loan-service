@@ -1,6 +1,7 @@
 package co.credit.app.r2dbc.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -15,7 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "loan_type")
-public class LoanType {
+public class LoanTypeEntity {
   @Id
   private Long id;
   private String name;

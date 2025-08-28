@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "loan_status")
-public class LoanStatus {
+public class LoanStatusEntity {
   private Integer id;
   private String name;
   private String description;

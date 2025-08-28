@@ -13,6 +13,7 @@ import lombok.Setter;
 public class Loan {
 
 	private String id;
+	private String document;
 	private String email;
 	private Double amount;
 	private Integer term;

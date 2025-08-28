@@ -20,6 +20,7 @@ import lombok.Setter;
 public class LoanEntity {
 	@Id
     private Long id;
+    private String document;
     private String email;
     private Double amount;
     private Integer term;

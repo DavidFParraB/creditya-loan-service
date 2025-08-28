@@ -1,15 +1,17 @@
 package co.credit.app.api.config;
 
-import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
 import co.credit.app.api.Handler;
 import co.credit.app.api.RouterRest;
+import co.credit.app.api.mapper.LoanDTOMapper;
 import co.credit.app.usecase.loan.LoanUseCase;
 import reactor.core.publisher.Flux;
 
@@ -23,6 +25,9 @@ class ConfigTest {
     
     @MockBean
     private LoanUseCase loanUseCase;
+
+    @MockBean
+    private LoanDTOMapper loanDTOMapper;
 
     @Test
     void corsConfigurationShouldAllowOrigins() {
