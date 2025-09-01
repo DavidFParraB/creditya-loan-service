@@ -19,5 +19,5 @@ public class Loan {
 	private Double amount;
 	private Integer term;
 	private Long statusId;
-	private Long loandTypeId;
+	private Long loanTypeId;
 }

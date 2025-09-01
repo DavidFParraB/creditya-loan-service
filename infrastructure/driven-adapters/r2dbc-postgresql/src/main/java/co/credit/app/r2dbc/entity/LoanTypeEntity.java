@@ -1,10 +1,11 @@
 package co.credit.app.r2dbc.entity;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,5 @@ public class LoanTypeEntity {
   private Double maximumAmount;
   @JsonProperty("is_automatic")
   private Boolean isAutomatic;
-  
 
 }

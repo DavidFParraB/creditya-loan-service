@@ -2,6 +2,7 @@ package co.credit.app.r2dbc;
 
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
+
 import co.credit.app.model.loan.Loan;
 import co.credit.app.model.loan.gateways.LoanRepository;
 import co.credit.app.r2dbc.entity.LoanEntity;
@@ -17,7 +18,8 @@ public class MyReactiveRepositoryAdapter
     /**
      * Could be use mapper.mapBuilder if your domain model implement builder pattern
      * super(repository, mapper, d ->
-     * mapper.mapBuilder(d,ObjectModel.ObjectModelBuilder.class).build()); Or using mapper.map with
+     * mapper.mapBuilder(d,ObjectModel.ObjectModelBuilder.class).build()); Or using
+     * mapper.map with
      * the class of the object model
      */
     super(repository, mapper, d -> mapper.map(d, Loan.class));

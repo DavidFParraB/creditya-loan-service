@@ -34,7 +34,7 @@ cors:
 adapter:
   restconsumer:
     timeout: 5000
-    url: "http://localhost:8080"
+    url: "http://localhost:8079/api/user"
 resilience4j:
   circuitbreaker:
     instances:

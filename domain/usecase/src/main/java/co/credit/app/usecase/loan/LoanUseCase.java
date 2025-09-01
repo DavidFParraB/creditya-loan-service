@@ -3,6 +3,7 @@ package co.credit.app.usecase.loan;
 import co.credit.app.model.loan.Loan;
 import co.credit.app.model.loan.gateways.LoanRepository;
 import co.credit.app.model.loantype.gateways.LoanTypeRepository;
+import co.credit.app.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -11,13 +12,20 @@ import reactor.core.publisher.Mono;
 public class LoanUseCase {
     private final LoanRepository loanRepository;
     private final LoanTypeRepository loanTypeRepository;
+    private final UserRepository userRepository;
 
     public Mono<Void> saveLoan(Loan loan) {
 
-        return loanTypeRepository.isValidLoanType(loan.getLoandTypeId())
+        return loanTypeRepository.isValidLoanType(loan.getLoanTypeId())
                 .flatMap(exist -> {
                     if (Boolean.TRUE.equals(exist)) {
-                        return loanRepository.saveLoan(loan);
+
+                        return userRepository.findUserByDocument(loan.getDocument())
+                                .flatMap(user -> {
+                                    return loanRepository.saveLoan(loan);
+                                })
+                                .then();
+
                     } else {
                         return Mono.error(new IllegalArgumentException("Invalid loan type."));
                     }
