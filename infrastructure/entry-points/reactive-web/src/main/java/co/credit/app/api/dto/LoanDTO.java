@@ -28,8 +28,8 @@ public class LoanDTO {
     private Integer term;
     @JsonProperty("status_id")
     @JsonIgnore
-    private Integer statusId;
+    private Long statusId;
     @JsonProperty("loan_type_id")
-    private Integer loandTypeId;
+    private Long loandTypeId;
 
 }

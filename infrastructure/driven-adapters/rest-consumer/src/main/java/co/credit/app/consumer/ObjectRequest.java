@@ -1,6 +1,7 @@
-package co.credit.app.model.loanstatus;
-import lombok.AllArgsConstructor;
+package co.credit.app.consumer;
+
 import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,8 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class LoanStatus {
-    private Integer id;
-    private String name;
-    private String description;
+public class ObjectRequest {
+
+    private String val1;
+    private String val2;
+
 }

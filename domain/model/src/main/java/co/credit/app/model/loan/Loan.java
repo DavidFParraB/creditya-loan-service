@@ -1,4 +1,5 @@
 package co.credit.app.model.loan;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,11 +13,11 @@ import lombok.Setter;
 @Builder(toBuilder = true)
 public class Loan {
 
-	private String id;
+	private Long id;
 	private String document;
 	private String email;
 	private Double amount;
 	private Integer term;
-	private Integer statusId;
-	private Integer loandTypeId;
+	private Long statusId;
+	private Long loandTypeId;
 }
