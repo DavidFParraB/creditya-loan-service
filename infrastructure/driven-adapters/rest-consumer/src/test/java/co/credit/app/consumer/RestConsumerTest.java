@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import co.credit.app.consumer.mapper.UserResponseDTOMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import reactor.test.StepVerifier;
@@ -21,12 +22,14 @@ class RestConsumerTest {
 
     private static MockWebServer mockBackEnd;
 
+    private static UserResponseDTOMapper userResponseDTOMapper;
+
     @BeforeAll
     static void setUp() throws IOException {
         mockBackEnd = new MockWebServer();
         mockBackEnd.start();
         var webClient = WebClient.builder().baseUrl(mockBackEnd.url("/").toString()).build();
-        restConsumer = new RestConsumer(webClient);
+        restConsumer = new RestConsumer(webClient, userResponseDTOMapper);
     }
 
     @AfterAll

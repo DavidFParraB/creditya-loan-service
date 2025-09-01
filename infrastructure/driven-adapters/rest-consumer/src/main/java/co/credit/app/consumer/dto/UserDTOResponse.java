@@ -1,4 +1,4 @@
-package co.credit.app.consumer;
+package co.credit.app.consumer.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
