@@ -3,7 +3,7 @@ package co.credit.app.consumer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import co.credit.app.consumer.dto.UserDTOResponse;
+import co.credit.app.consumer.dto.UserResponseDTO;
 import co.credit.app.consumer.mapper.UserResponseDTOMapper;
 import co.credit.app.model.user.User;
 import co.credit.app.model.user.gateways.UserRepository;
@@ -59,7 +59,7 @@ public class RestConsumer implements UserRepository {
                                 .get()
                                 .uri(uriBuilder -> uriBuilder.path("/find-by-document/{document}")
                                                 .build(document))
-                                .retrieve().bodyToMono(UserDTOResponse.class)
+                                .retrieve().bodyToMono(UserResponseDTO.class)
                                 .map(userResponseDTOMapper::toModel);
         }
 

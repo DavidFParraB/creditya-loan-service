@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class UserDTOResponse {
+public class UserResponseDTO {
     private Long id;
     private String name;
     private String lastName;
