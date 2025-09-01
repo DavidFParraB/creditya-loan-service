@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
+import co.credit.app.api.dto.ErrorResponse;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Mono;
 
@@ -36,7 +37,7 @@ public class GlobalExceptionHandler {
     public Mono<ResponseEntity<ErrorResponse>> handleGeneralException(IllegalArgumentException ex) {
         log.error("An unexpected error occurred: {}", ex.getMessage(), ex);
 
-        String friendlyMessage = "The email or document you are trying to register is already registered";
+        String friendlyMessage = "The entered parameters do not match the database";
         ErrorResponse errorResponse = new ErrorResponse(friendlyMessage, null);
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
     }
