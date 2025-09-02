@@ -13,21 +13,22 @@ import lombok.Data;
 public class LoanDTO {
     @JsonIgnore
     private Long id;
-    @NotBlank(message = "El documento es obligatorio")
+    @NotBlank(message = "The document is mandatory")
     private String document;
-    @NotBlank(message = "El email es obligatorio")
+    @NotBlank(message = "Email is required")
     private String email;
-    @NotNull(message = "El amount es obligatorio")
-    @Min(value = 1, message = "El monto mínimo es $1")
-    @Max(value = 1000000, message = "El monto máximo es $1,000,000")
+    @NotNull(message = "The amount is required")
+    @Min(value = 100000, message = "The minimum amount is $100,000")
+    @Max(value = 5000000, message = "The maximum amount is $5,000,000")
     private Double amount;
-    @NotNull(message = "El plazo es obligatorio")
-    @Min(value = 1, message = "El plazo mínimo es 1")
-    @Max(value = 1000000, message = "El plazo máximo es 36")
+    @NotNull(message = "The loan term is mandatory")
+    @Min(value = 1, message = "The minimum term is 1 month")
+    @Max(value = 36, message = "The maximum term is 36 months")
     private Integer term;
     @JsonProperty("status_id")
     @JsonIgnore
     private Long statusId;
+    @NotNull(message = "The loan type is mandatory")
     @JsonProperty("loan_type_id")
     private Long loanTypeId;
 
