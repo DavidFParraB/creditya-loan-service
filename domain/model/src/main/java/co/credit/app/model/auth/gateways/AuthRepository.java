@@ -1,0 +1,9 @@
+package co.credit.app.model.auth.gateways;
+
+import co.credit.app.model.auth.Auth;
+import reactor.core.publisher.Mono;
+
+public interface AuthRepository {
+
+  Mono<Auth> validateToken(String token);
+}

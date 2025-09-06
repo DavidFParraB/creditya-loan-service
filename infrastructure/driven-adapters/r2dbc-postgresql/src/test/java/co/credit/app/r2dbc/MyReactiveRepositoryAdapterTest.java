@@ -2,6 +2,7 @@ package co.credit.app.r2dbc;
 
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,8 +18,6 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class MyReactiveRepositoryAdapterTest {
-    // TODO: change four you own tests
-
     @InjectMocks
     MyReactiveRepositoryAdapter repositoryAdapter;
 
@@ -29,7 +28,8 @@ class MyReactiveRepositoryAdapterTest {
     ObjectMapper mapper;
 
     @Test
-    void mustFindValueById() {
+    @DisplayName("Findy Loan by id")
+    void findLoanByIdTest() {
         LoanEntity loanEntity = gEntity();
         Loan loanObj = getLoan();
         when(repository.findById(1L)).thenReturn(Mono.just(loanEntity));
@@ -39,6 +39,36 @@ class MyReactiveRepositoryAdapterTest {
 
         StepVerifier.create(result)
                 .expectNextMatches(value -> value.equals(loanObj))
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("Find all loans")
+    void findAllLoansTest() {
+        LoanEntity loanEntity = gEntity();
+        Loan loanObj = getLoan();
+        when(repository.findAll()).thenReturn(Flux.just(loanEntity));
+        when(mapper.map(loanEntity, Loan.class)).thenReturn(loanObj);
+
+        Flux<Loan> result = repositoryAdapter.getAllLoans();
+
+        StepVerifier.create(result)
+                .expectNext(loanObj)
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("Save loan")
+    void saveLoanTest() {
+        LoanEntity loanEntity = gEntity();
+        Loan loanObj = getLoan();
+
+        when(mapper.map(loanObj, LoanEntity.class)).thenReturn(loanEntity);
+        when(repository.save(loanEntity)).thenReturn(Mono.just(loanEntity));
+
+        Mono<Void> result = repositoryAdapter.saveLoan(loanObj);
+
+        StepVerifier.create(result)
                 .verifyComplete();
     }
 
@@ -53,45 +83,4 @@ class MyReactiveRepositoryAdapterTest {
         loan.setId(1L);
         return loan;
     }
-
-    @Test
-    void mustFindAllValues() {
-        LoanEntity loanEntity = gEntity();
-        Loan loanObj = getLoan();
-        when(repository.findAll()).thenReturn(Flux.just(loanEntity));
-        when(mapper.map(loanEntity, Loan.class)).thenReturn(loanObj);
-
-        Flux<Loan> result = repositoryAdapter.findAll();
-
-        StepVerifier.create(result)
-                // .expectNext(value -> value.equals(loanObj))
-                .expectNext(loanObj)
-                .verifyComplete();
-    }
-
-    /*
-     * @Test
-     * void mustFindByExample() {
-     * when(repository.findAll(any(Example.class))).thenReturn(Flux.just("test"));
-     * when(mapper.map("test", Object.class)).thenReturn("test");
-     * 
-     * Flux<Object> result = repositoryAdapter.findByExample("test");
-     * 
-     * StepVerifier.create(result)
-     * .expectNextMatches(value -> value.equals("test"))
-     * .verifyComplete();
-     * }
-     * 
-     * @Test
-     * void mustSaveValue() {
-     * when(repository.save("test")).thenReturn(Mono.just("test"));
-     * when(mapper.map("test", Object.class)).thenReturn("test");
-     * 
-     * Mono<Object> result = repositoryAdapter.save("test");
-     * 
-     * StepVerifier.create(result)
-     * .expectNextMatches(value -> value.equals("test"))
-     * .verifyComplete();
-     * }
-     */
 }

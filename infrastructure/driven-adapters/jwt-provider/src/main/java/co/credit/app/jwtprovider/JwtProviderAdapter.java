@@ -1,0 +1,38 @@
+package co.credit.app.jwtprovider;
+
+import java.util.Date;
+import co.credit.app.jwtprovider.config.JwtConfigProvider;
+import co.credit.app.model.auth.Auth;
+import co.credit.app.model.auth.gateways.AuthRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+@Log4j2
+@RequiredArgsConstructor
+@Component
+public class JwtProviderAdapter implements AuthRepository {
+
+  private final JwtConfigProvider jwtConfig;
+
+  @Override
+  public Mono<Auth> validateToken(String token) {
+    try {
+      Claims claims = Jwts.parser().verifyWith(jwtConfig.jwtSecretKey()).build()
+          .parseSignedClaims(token).getPayload();
+
+      log.info("Claims: {}", claims);
+      Auth auth = Auth.builder().username(claims.get("subject", String.class))
+          .role(claims.get("role", Long.class))
+          .build();
+
+      return Mono.just(auth);
+    } catch (Exception e) {
+      log.error("Invalid token: {}", e.getMessage(), e);
+      return Mono.error(new IllegalArgumentException("Invalid token"));
+    }
+  }
+
+}
