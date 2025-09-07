@@ -11,7 +11,6 @@ import lombok.Data;
 
 @Data
 public class LoanDTO {
-    @JsonIgnore
     private Long id;
     @NotBlank(message = "The document is mandatory")
     private String document;
@@ -26,7 +25,6 @@ public class LoanDTO {
     @Max(value = 36, message = "The maximum term is 36 months")
     private Integer term;
     @JsonProperty("status_id")
-    @JsonIgnore
     private Long statusId;
     @NotNull(message = "The loan type is mandatory")
     @JsonProperty("loan_type_id")

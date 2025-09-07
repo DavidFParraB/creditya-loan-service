@@ -9,4 +9,6 @@ public interface LoanRepository {
     Mono<Void> saveLoan(Loan loan);
 
     Flux<Loan> getAllLoans();
+
+    Flux<Loan> getAllLoansWithPagination(int status, int page, int size);
 }

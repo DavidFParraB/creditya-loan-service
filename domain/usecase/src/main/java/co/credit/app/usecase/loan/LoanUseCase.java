@@ -37,4 +37,9 @@ public class LoanUseCase {
     public Flux<Loan> getAllLoans() {
         return loanRepository.getAllLoans();
     }
+
+    public Flux<Loan> getAllLoansWithPagination(int status, int page, int size) {
+        return loanRepository.getAllLoansWithPagination(status, page, size)
+            .onErrorResume(e -> Flux.error(new IllegalArgumentException("Error fetching loans." + e.getMessage())));
+    }
 }

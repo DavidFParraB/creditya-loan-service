@@ -1,5 +1,6 @@
 package co.credit.app.api.config;
 
+import co.credit.app.usecase.auth.AuthUseCase;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.when;
@@ -34,6 +35,9 @@ class ConfigTest {
 
   @MockBean
   private ValidatorRequest validatorRequest;
+
+  @MockBean
+  private AuthUseCase authUseCase;
 
   @Test
   void corsConfigurationShouldAllowOrigins() {

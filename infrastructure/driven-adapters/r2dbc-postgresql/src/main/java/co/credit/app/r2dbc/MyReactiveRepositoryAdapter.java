@@ -1,5 +1,6 @@
 package co.credit.app.r2dbc;
 
+import lombok.extern.log4j.Log4j2;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
+@Log4j2
 public class MyReactiveRepositoryAdapter
     extends ReactiveAdapterOperations<Loan, LoanEntity, Long, MyReactiveRepository>
     implements LoanRepository {
@@ -33,6 +35,14 @@ public class MyReactiveRepositoryAdapter
   @Override
   public Flux<Loan> getAllLoans() {
     return repository.findAll().map(this::toEntity);
+  }
+
+  @Override
+  public Flux<Loan> getAllLoansWithPagination(int status,int page, int size) {
+    int offset = page * size;
+    return repository.findAllWithPagination(size, offset)
+        .doOnSubscribe( l -> log.info("Fetching loans with status: {}, page: {}, size: {}", status, page, size))
+        .map(this::toEntity);
   }
 
 }

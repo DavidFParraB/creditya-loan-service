@@ -1,5 +1,7 @@
 package co.credit.app.api;
 
+import co.credit.app.usecase.auth.AuthUseCase;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -24,6 +26,7 @@ public class Handler {
   private final LoanUseCase loanUseCase;
   private final LoanDTOMapper loanDTOMapper;
   private final ValidatorRequest validatorRequest;
+  private final AuthUseCase authUseCase;
 
   public Mono<ServerResponse> listenGETUseCase(ServerRequest serverRequest) {
     return loanUseCase.getAllLoans()
@@ -33,7 +36,21 @@ public class Handler {
         .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
   }
 
-  public Mono<ServerResponse> listenPOSTUseCase(ServerRequest serverRequest) {
+  public Mono<ServerResponse> listenGETByFilterUseCase(ServerRequest serverRequest) {
+    int status = Integer.parseInt(serverRequest.queryParam("status").orElse("1"));
+    int page = Integer.parseInt(serverRequest.queryParam("page").orElse("1"));
+    int size = Integer.parseInt(serverRequest.queryParam("size").orElse("1"));
+    return loanUseCase.getAllLoansWithPagination(status, page, size)
+        .map(loanDTOMapper::toResponse)
+        .collectList()
+        .flatMap(loanDTOs -> ServerResponse.ok().bodyValue(loanDTOs))
+        //.onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build())
+        .onErrorResume(Exception.class, e -> ServerResponse.badRequest()
+            .bodyValue(new ErrorResponse(e.getMessage(), null)))
+        ;
+  }
+
+  /*public Mono<ServerResponse> listenPOSTUseCase(ServerRequest serverRequest) {
     return serverRequest.bodyToMono(LoanDTO.class)
         .flatMap(validatorRequest::validate)
         .flatMap(loanDTO -> loanUseCase.saveLoan(loanDTOMapper.toModel(loanDTO))
@@ -41,6 +58,37 @@ public class Handler {
         .onErrorResume(ValidationError.class, e -> ServerResponse.badRequest()
             .bodyValue(new ErrorResponse(e.getMessage(), e.getErrors())))
         .doOnNext(loan -> log.info("Loan saved: {}", loan));
-  }
+  }*/
 
+  public Mono<ServerResponse> listenPOSTUseCase(ServerRequest serverRequest) {
+    String authHeader = serverRequest.headers().firstHeader("Authorization");
+
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+      String token = authHeader.substring(7);
+
+      return authUseCase.validateToken(token)
+          .flatMap(authResult -> serverRequest.bodyToMono(LoanDTO.class)
+              .flatMap(validatorRequest::validate)
+              .flatMap(loanDTO -> {
+                String subject = authResult.getUsername();
+                if (subject.equals(loanDTO.getEmail())) {
+                  return loanUseCase.saveLoan(loanDTOMapper.toModel(loanDTO))
+                      .then(ServerResponse.status(HttpStatus.OK)
+                          .bodyValue(new SuccessResponse(0, "OK")));
+                } else {
+                  return ServerResponse.status(HttpStatus.FORBIDDEN)
+                      .bodyValue(new ErrorResponse("User mismatch",
+                          List.of("The token subject does not match the user in the request")));
+                }
+              })
+          )
+          .onErrorResume(ValidationError.class, e -> ServerResponse.badRequest()
+              .bodyValue(new ErrorResponse(e.getMessage(), e.getErrors())))
+          .doOnNext(loan -> log.info("Loan saved: {}", loan));
+    } else {
+      return ServerResponse.status(HttpStatus.UNAUTHORIZED)
+          .bodyValue(new ErrorResponse("Unauthorized",
+              List.of("Authorization header is missing or invalid")));
+    }
+  }
 }
