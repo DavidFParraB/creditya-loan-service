@@ -1,6 +1,8 @@
 package co.credit.app.api;
 
+import co.credit.app.api.mapper.LoanReportDTOMapper;
 import co.credit.app.usecase.auth.AuthUseCase;
+import co.credit.app.usecase.loanreport.LoanReportUseCase;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,7 @@ public class Handler {
   private final LoanDTOMapper loanDTOMapper;
   private final ValidatorRequest validatorRequest;
   private final AuthUseCase authUseCase;
+  private final LoanReportDTOMapper loanReportDTOMapper;
 
   public Mono<ServerResponse> listenGETUseCase(ServerRequest serverRequest) {
     return loanUseCase.getAllLoans()
@@ -40,8 +43,8 @@ public class Handler {
     int status = Integer.parseInt(serverRequest.queryParam("status").orElse("1"));
     int page = Integer.parseInt(serverRequest.queryParam("page").orElse("1"));
     int size = Integer.parseInt(serverRequest.queryParam("size").orElse("1"));
-    return loanUseCase.getAllLoansWithPagination(status, page, size)
-        .map(loanDTOMapper::toResponse)
+    return loanUseCase.generateLoanReport(status, page, size)
+        .map(loanReportDTOMapper::toResponse)
         .collectList()
         .flatMap(loanDTOs -> ServerResponse.ok().bodyValue(loanDTOs))
         //.onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build())

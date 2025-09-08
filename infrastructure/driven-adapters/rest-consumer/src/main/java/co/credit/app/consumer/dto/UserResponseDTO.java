@@ -1,5 +1,6 @@
 package co.credit.app.consumer.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import lombok.Setter;
 public class UserResponseDTO {
     private Long id;
     private String name;
+    @JsonProperty("last_name")
     private String lastName;
     private String email;
     private String document;

@@ -2,7 +2,9 @@ package co.credit.app.usecase.loan;
 
 import co.credit.app.model.loan.Loan;
 import co.credit.app.model.loan.gateways.LoanRepository;
+import co.credit.app.model.loanreport.LoanReport;
 import co.credit.app.model.loantype.gateways.LoanTypeRepository;
+import co.credit.app.model.user.User;
 import co.credit.app.model.user.gateways.UserRepository;
 import co.credit.app.usecase.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -18,20 +20,20 @@ public class LoanUseCase {
     public Mono<Void> saveLoan(Loan loan) {
 
         return loanTypeRepository.isValidLoanType(loan.getLoanTypeId())
-                .flatMap(exist -> {
-                    if (Boolean.TRUE.equals(exist)) {
+            .flatMap(exist -> {
+                if (Boolean.TRUE.equals(exist)) {
 
-                        return userRepository.findUserByDocument(loan.getDocument())
-                                .flatMap(user -> {
-                                    loan.setStatusId(Constants.LOAN_STATUS_PENDING);
-                                    return loanRepository.saveLoan(loan);
-                                }).then()
-                                .onErrorResume(e -> Mono.error(new IllegalArgumentException("Invalid User.")));
+                    return userRepository.findUserByDocument(loan.getDocument())
+                            .flatMap(user -> {
+                                loan.setStatusId(Constants.LOAN_STATUS_PENDING);
+                                return loanRepository.saveLoan(loan);
+                            }).then()
+                            .onErrorResume(e -> Mono.error(new IllegalArgumentException("Invalid User.")));
 
-                    } else {
-                        return Mono.error(new IllegalArgumentException("Invalid loan type."));
-                    }
-                });
+                } else {
+                    return Mono.error(new IllegalArgumentException("Invalid loan type."));
+                }
+            });
     }
 
     public Flux<Loan> getAllLoans() {
@@ -42,4 +44,25 @@ public class LoanUseCase {
         return loanRepository.getAllLoansWithPagination(status, page, size)
             .onErrorResume(e -> Flux.error(new IllegalArgumentException("Error fetching loans." + e.getMessage())));
     }
+
+  public Flux<LoanReport> generateLoanReport(int status, int size, int offset) {
+    return loanRepository.getAllLoansWithPagination(status, size, offset)
+        .flatMap(loan -> userRepository.findUserByDocument(loan.getDocument())
+            .map(user -> buildLoanReport(loan, user)));
+  }
+
+  private LoanReport buildLoanReport(Loan loan, User user) {
+    return LoanReport.builder()
+        .id(loan.getId())
+        .amount(loan.getAmount())
+        .term(loan.getTerm())
+        .statusId(loan.getStatusId())
+        .loanTypeId(loan.getLoanTypeId())
+        .name(user.getName())
+        .lastName(user.getLastName())
+        .email(user.getEmail())
+        .document(user.getDocument())
+        .salary(user.getSalary())
+        .build();
+  }
 }
