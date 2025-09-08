@@ -33,6 +33,7 @@ public class Handler {
   private final AuthUseCase authUseCase;
   private final LoanReportDTOMapper loanReportDTOMapper;
   private final LoanFilterDTOMapper loanFilterDTOMapper;
+  private final LoanReportUseCase loanReportUseCase;
 
   public Mono<ServerResponse> listenGETUseCase(ServerRequest serverRequest) {
     return loanUseCase.getAllLoans()
@@ -45,7 +46,7 @@ public class Handler {
   public Mono<ServerResponse> listenPOSTByFilterUseCase(ServerRequest serverRequest) {
     return serverRequest.bodyToMono(LoanFilterDTO.class)
         .flatMap(validatorRequest::validate)
-        .flatMap(loanFilterDTO -> loanUseCase.generateLoanReport(loanFilterDTOMapper.toModel(loanFilterDTO))
+        .flatMap(loanFilterDTO -> loanReportUseCase.generateLoanReport(loanFilterDTOMapper.toModel(loanFilterDTO))
             .map(loanReportDTOMapper::toResponse)
             .collectList()
             .flatMap(loanDTOs -> ServerResponse.ok().bodyValue(loanDTOs))
