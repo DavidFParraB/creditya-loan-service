@@ -18,7 +18,7 @@ public class SecurityConfig {
         .csrf(ServerHttpSecurity.CsrfSpec::disable)
         .authorizeExchange(exchanges -> exchanges
             .pathMatchers(HttpMethod.GET, "/api/loan").permitAll()
-            .pathMatchers(HttpMethod.GET, "/api/loan/filter").permitAll()
+            .pathMatchers(HttpMethod.POST, "/api/loan/filter").permitAll()//.hasAnyRole("3")
             .pathMatchers(HttpMethod.POST, "/api/loan").hasAnyRole("2")
             .anyExchange().authenticated()
         )

@@ -1,5 +1,6 @@
 package co.credit.app.api.config;
 
+import co.credit.app.api.mapper.LoanFilterDTOMapper;
 import co.credit.app.api.mapper.LoanReportDTOMapper;
 import co.credit.app.usecase.auth.AuthUseCase;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,8 @@ class ConfigTest {
   @MockBean
   private LoanReportDTOMapper loanReportDTOMapper;
 
+  @MockBean
+  private LoanFilterDTOMapper loanFilterDTOMapper;
 
   @Test
   void corsConfigurationShouldAllowOrigins() {

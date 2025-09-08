@@ -1,5 +1,7 @@
 package co.credit.app.api;
 
+import co.credit.app.api.dto.LoanFilterDTO;
+import co.credit.app.api.mapper.LoanFilterDTOMapper;
 import co.credit.app.api.mapper.LoanReportDTOMapper;
 import co.credit.app.usecase.auth.AuthUseCase;
 import co.credit.app.usecase.loanreport.LoanReportUseCase;
@@ -30,6 +32,7 @@ public class Handler {
   private final ValidatorRequest validatorRequest;
   private final AuthUseCase authUseCase;
   private final LoanReportDTOMapper loanReportDTOMapper;
+  private final LoanFilterDTOMapper loanFilterDTOMapper;
 
   public Mono<ServerResponse> listenGETUseCase(ServerRequest serverRequest) {
     return loanUseCase.getAllLoans()
@@ -39,18 +42,16 @@ public class Handler {
         .onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
   }
 
-  public Mono<ServerResponse> listenGETByFilterUseCase(ServerRequest serverRequest) {
-    int status = Integer.parseInt(serverRequest.queryParam("status").orElse("1"));
-    int page = Integer.parseInt(serverRequest.queryParam("page").orElse("1"));
-    int size = Integer.parseInt(serverRequest.queryParam("size").orElse("1"));
-    return loanUseCase.generateLoanReport(status, page, size)
-        .map(loanReportDTOMapper::toResponse)
-        .collectList()
-        .flatMap(loanDTOs -> ServerResponse.ok().bodyValue(loanDTOs))
-        //.onErrorResume(e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build())
-        .onErrorResume(Exception.class, e -> ServerResponse.badRequest()
-            .bodyValue(new ErrorResponse(e.getMessage(), null)))
-        ;
+  public Mono<ServerResponse> listenPOSTByFilterUseCase(ServerRequest serverRequest) {
+    return serverRequest.bodyToMono(LoanFilterDTO.class)
+        .flatMap(validatorRequest::validate)
+        .flatMap(loanFilterDTO -> loanUseCase.generateLoanReport(loanFilterDTOMapper.toModel(loanFilterDTO))
+            .map(loanReportDTOMapper::toResponse)
+            .collectList()
+            .flatMap(loanDTOs -> ServerResponse.ok().bodyValue(loanDTOs))
+            .doOnNext(loan -> log.info("Loan report generated: {}", loan)))
+        .onErrorResume(ValidationError.class, e -> ServerResponse.badRequest()
+            .bodyValue(new ErrorResponse(e.getMessage(), e.getErrors())));
   }
 
   /*public Mono<ServerResponse> listenPOSTUseCase(ServerRequest serverRequest) {

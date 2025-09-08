@@ -1,5 +1,6 @@
 package co.credit.app.r2dbc;
 
+import co.credit.app.model.loanfilter.LoanFilter;
 import lombok.extern.log4j.Log4j2;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono;
 public class MyReactiveRepositoryAdapter
     extends ReactiveAdapterOperations<Loan, LoanEntity, Long, MyReactiveRepository>
     implements LoanRepository {
+
   public MyReactiveRepositoryAdapter(MyReactiveRepository repository, ObjectMapper mapper) {
     /**
      * Could be use mapper.mapBuilder if your domain model implement builder pattern
@@ -38,10 +40,11 @@ public class MyReactiveRepositoryAdapter
   }
 
   @Override
-  public Flux<Loan> getAllLoansWithPagination(int status,int page, int size) {
-    int offset = page * size;
-    return repository.findAllWithPagination(size, offset)
-        .doOnSubscribe( l -> log.info("Fetching loans with status: {}, page: {}, size: {}", status, page, size))
+  public Flux<Loan> getAllLoansWithPagination(LoanFilter filter) {
+    int offset = filter.getPage() * filter.getSize();
+    return repository.findAllWithPagination(filter.getSize(), offset)
+        .doOnSubscribe(l -> log.info("Fetching loans with status: {}, page: {}, size: {}",
+            filter.getStatusId(), filter.getPage(), filter.getSize()))
         .map(this::toEntity);
   }
 

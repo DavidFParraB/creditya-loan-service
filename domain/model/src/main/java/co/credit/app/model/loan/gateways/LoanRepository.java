@@ -1,6 +1,7 @@
 package co.credit.app.model.loan.gateways;
 
 import co.credit.app.model.loan.Loan;
+import co.credit.app.model.loanfilter.LoanFilter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -10,5 +11,5 @@ public interface LoanRepository {
 
     Flux<Loan> getAllLoans();
 
-    Flux<Loan> getAllLoansWithPagination(int status, int page, int size);
+    Flux<Loan> getAllLoansWithPagination(LoanFilter filter);
 }

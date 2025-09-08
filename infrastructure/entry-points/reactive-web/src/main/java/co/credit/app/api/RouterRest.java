@@ -41,7 +41,7 @@ public class RouterRest {
   @Bean
   public RouterFunction<ServerResponse> routerFunction(Handler handler) {
     return route(GET("/api/loan"), handler::listenGETUseCase)
-        .andRoute(GET("/api/loan/filter"), handler::listenGETByFilterUseCase)
+        .andRoute(POST("/api/loan/filter"), handler::listenPOSTByFilterUseCase)
         .andRoute(POST("/api/loan"), handler::listenPOSTUseCase);
   }
 }

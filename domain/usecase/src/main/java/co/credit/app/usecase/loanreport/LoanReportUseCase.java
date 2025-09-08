@@ -2,6 +2,7 @@ package co.credit.app.usecase.loanreport;
 
 import co.credit.app.model.loan.Loan;
 import co.credit.app.model.loan.gateways.LoanRepository;
+import co.credit.app.model.loanfilter.LoanFilter;
 import co.credit.app.model.loanreport.LoanReport;
 import co.credit.app.model.user.User;
 import co.credit.app.model.user.gateways.UserRepository;
@@ -14,8 +15,8 @@ public class LoanReportUseCase {
   private final UserRepository userRepository;
   private final LoanRepository loanRepository;
 
-  public Flux<LoanReport> generateLoanReport(int status, int size, int offset) {
-    return loanRepository.getAllLoansWithPagination(status, size, offset)
+  public Flux<LoanReport> generateLoanReport(LoanFilter filter) {
+    return loanRepository.getAllLoansWithPagination(filter)
         .flatMap(loan -> userRepository.findUserByDocument(loan.getDocument())
             .map(user -> buildLoanReport(loan, user)));
   }
