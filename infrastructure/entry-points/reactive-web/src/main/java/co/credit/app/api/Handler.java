@@ -49,20 +49,10 @@ public class Handler {
             .map(loanReportDTOMapper::toResponse)
             .collectList()
             .flatMap(loanDTOs -> ServerResponse.ok().bodyValue(loanDTOs))
-            .doOnNext(loan -> log.info("Loan report generated: {}", loan)))
+            .doOnNext(loan -> log.info("Loan report generated with filter: {}", loan)))
         .onErrorResume(ValidationError.class, e -> ServerResponse.badRequest()
             .bodyValue(new ErrorResponse(e.getMessage(), e.getErrors())));
   }
-
-  /*public Mono<ServerResponse> listenPOSTUseCase(ServerRequest serverRequest) {
-    return serverRequest.bodyToMono(LoanDTO.class)
-        .flatMap(validatorRequest::validate)
-        .flatMap(loanDTO -> loanUseCase.saveLoan(loanDTOMapper.toModel(loanDTO))
-            .then(ServerResponse.status(HttpStatus.OK).bodyValue(new SuccessResponse(0, "OK"))))
-        .onErrorResume(ValidationError.class, e -> ServerResponse.badRequest()
-            .bodyValue(new ErrorResponse(e.getMessage(), e.getErrors())))
-        .doOnNext(loan -> log.info("Loan saved: {}", loan));
-  }*/
 
   public Mono<ServerResponse> listenPOSTUseCase(ServerRequest serverRequest) {
     String authHeader = serverRequest.headers().firstHeader("Authorization");
