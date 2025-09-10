@@ -2,7 +2,6 @@ package co.credit.app.api.config;
 
 import co.credit.app.api.mapper.LoanFilterDTOMapper;
 import co.credit.app.api.mapper.LoanReportDTOMapper;
-import co.credit.app.api.mapper.LoanUpdateDTOMapper;
 import co.credit.app.usecase.auth.AuthUseCase;
 import co.credit.app.usecase.loanreport.LoanReportUseCase;
 import org.junit.jupiter.api.Test;
@@ -48,9 +47,6 @@ class ConfigTest {
 
   @MockBean
   private LoanFilterDTOMapper loanFilterDTOMapper;
-
-  @MockBean
-  private LoanUpdateDTOMapper loanUpdateDTOMapper;
 
   @MockBean
   private LoanReportUseCase loanReportUseCase;

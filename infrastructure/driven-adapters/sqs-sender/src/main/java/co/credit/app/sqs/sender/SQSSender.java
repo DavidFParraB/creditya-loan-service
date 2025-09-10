@@ -40,6 +40,7 @@ public class SQSSender implements MailRepository {
     public Mono<String> sendMail(Mail mail) {
       try {
         String jsonMessage = objectMapper.writeValueAsString(mail);
+        log.error("Mail to JSON : {} ", jsonMessage);
         return send(jsonMessage);
       } catch (JsonProcessingException e) {
         log.error("Failed to convert Mail to JSON", e);

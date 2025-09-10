@@ -44,15 +44,15 @@ public class LoanUseCase {
         });
   }
 
-  public Mono<Void> updateLoan(Long id, Loan loan) {
+  public Mono<Void> updateLoan(Long id, String statusName) {
 
-    return loanStatusRepository.isValidLoanStatus(loan.getStatusId())
+    return loanStatusRepository.getLoanByName(statusName)
         .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid loan status.")))
         .flatMap(loanStatus -> {
           return loanRepository.getLoanById(id)
               .switchIfEmpty(Mono.error(new IllegalArgumentException("Loan not found.")))
               .flatMap(dbLoan -> {
-                dbLoan.setStatusId(loan.getStatusId());
+                dbLoan.setStatusId(loanStatus.getId());
                 return loanRepository.saveLoan(dbLoan).then(mailRepository.sendMail(
                     Mail.builder().recipientEmail(dbLoan.getEmail())
                         .subject("Loan application number " + dbLoan.getId() +" updated.")

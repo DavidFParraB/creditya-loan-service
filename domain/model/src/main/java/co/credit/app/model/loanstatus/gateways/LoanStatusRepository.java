@@ -5,5 +5,7 @@ import reactor.core.publisher.Mono;
 
 public interface LoanStatusRepository {
 
-  Mono<LoanStatus> isValidLoanStatus(Long loanStatusId);
+  Mono<LoanStatus> getLoanStatusById(Long loanStatusId);
+
+  Mono<LoanStatus> getLoanByName(String name);
 }
