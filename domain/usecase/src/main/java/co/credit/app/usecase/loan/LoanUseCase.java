@@ -7,6 +7,8 @@ import co.credit.app.model.loanreport.LoanReport;
 import co.credit.app.model.loanreport.gateways.LoanReportRepository;
 import co.credit.app.model.loanstatus.gateways.LoanStatusRepository;
 import co.credit.app.model.loantype.gateways.LoanTypeRepository;
+import co.credit.app.model.mail.Mail;
+import co.credit.app.model.mail.gateways.MailRepository;
 import co.credit.app.model.user.gateways.UserRepository;
 import co.credit.app.usecase.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class LoanUseCase {
   private final UserRepository userRepository;
   private final LoanReportRepository loanReportService;
   private final LoanStatusRepository loanStatusRepository;
+  private final MailRepository mailRepository;
 
   public Mono<Void> saveLoan(Loan loan) {
 
@@ -49,7 +52,12 @@ public class LoanUseCase {
             .switchIfEmpty(Mono.error(new IllegalArgumentException("Loan not found.")))
             .flatMap(dbLoan -> {
               dbLoan.setStatusId(loan.getStatusId());
-              return loanRepository.saveLoan(dbLoan);
+              return loanRepository.saveLoan(dbLoan)
+                  .then(mailRepository.sendMail(Mail.builder().recipientEmail(dbLoan.getEmail())
+                        .subject("Loan Status Update : " + dbLoan.getId())
+                        .body("Your loan status has been updated to " + dbLoan.getStatusId() + ".")
+                        .build()))
+                   .then();
             }).then();
       } else {
         return Mono.error(new IllegalArgumentException("Invalid loan status."));
