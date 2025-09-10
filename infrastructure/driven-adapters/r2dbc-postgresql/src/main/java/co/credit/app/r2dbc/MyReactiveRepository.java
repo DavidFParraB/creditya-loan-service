@@ -13,6 +13,8 @@ import reactor.core.publisher.Flux;
 public interface MyReactiveRepository
     extends ReactiveCrudRepository<LoanEntity, Long>, ReactiveQueryByExampleExecutor<LoanEntity> {
 
-  @Query("SELECT * FROM loan LIMIT :limit OFFSET :offset")
-  Flux<LoanEntity> findAllWithPagination(@Param("limit") int limit, @Param("offset") int offset);
+  @Query("SELECT * FROM loan WHERE status_id = :statusId ORDER BY id LIMIT :limit OFFSET :offset")
+  Flux<LoanEntity> findByStatusIdWithPagination(@Param("statusId") Integer statusId,
+      @Param("limit") int limit,
+      @Param("offset") int offset);
 }

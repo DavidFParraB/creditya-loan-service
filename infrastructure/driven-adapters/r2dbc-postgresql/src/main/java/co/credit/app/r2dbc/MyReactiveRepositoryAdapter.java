@@ -42,7 +42,7 @@ public class MyReactiveRepositoryAdapter
   @Override
   public Flux<Loan> getAllLoansWithPagination(LoanFilter filter) {
     int offset = filter.getPage() * filter.getSize();
-    return repository.findAllWithPagination(filter.getSize(), offset)
+    return repository.findByStatusIdWithPagination(filter.getStatusId() , filter.getSize(), offset)
         .doOnSubscribe(l -> log.info("Fetching loans with status: {}, page: {}, size: {}",
             filter.getStatusId(), filter.getPage(), filter.getSize()))
         .map(this::toEntity);
