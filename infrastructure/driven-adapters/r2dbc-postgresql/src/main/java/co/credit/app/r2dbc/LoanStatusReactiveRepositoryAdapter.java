@@ -26,10 +26,11 @@ public class LoanStatusReactiveRepositoryAdapter
   }
 
   @Override
-  public Mono<Boolean> isValidLoanStatus(Long loanStatusId) {
+  public Mono<LoanStatus> isValidLoanStatus(Long loanStatusId) {
     log.info("Validating loan status: {}", loanStatusId);
     return repository.findById(loanStatusId)
-        .doOnSubscribe(s -> log.info("Validating loan status: {}", loanStatusId))
-        .hasElement();
+        .doOnSubscribe(l -> log.info("Fetching loan status with id: {}", loanStatusId))
+        .doOnNext(loan -> log.info("Found loan with ID: {}", loan.getName()))
+        .map(this::toEntity);
   }
 }

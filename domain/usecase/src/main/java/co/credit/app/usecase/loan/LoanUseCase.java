@@ -46,23 +46,20 @@ public class LoanUseCase {
 
   public Mono<Void> updateLoan(Long id, Loan loan) {
 
-    return loanStatusRepository.isValidLoanStatus(loan.getStatusId()).flatMap(isValidStatus -> {
-      if (Boolean.TRUE.equals(isValidStatus)) {
-        return loanRepository.getLoanById(id)
-            .switchIfEmpty(Mono.error(new IllegalArgumentException("Loan not found.")))
-            .flatMap(dbLoan -> {
-              dbLoan.setStatusId(loan.getStatusId());
-              return loanRepository.saveLoan(dbLoan)
-                  .then(mailRepository.sendMail(Mail.builder().recipientEmail(dbLoan.getEmail())
-                        .subject("Loan Status Update : " + dbLoan.getId())
-                        .body("Your loan status has been updated to " + dbLoan.getStatusId() + ".")
-                        .build()))
-                   .then();
-            }).then();
-      } else {
-        return Mono.error(new IllegalArgumentException("Invalid loan status."));
-      }
-    });
+    return loanStatusRepository.isValidLoanStatus(loan.getStatusId())
+        .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid loan status.")))
+        .flatMap(loanStatus -> {
+          return loanRepository.getLoanById(id)
+              .switchIfEmpty(Mono.error(new IllegalArgumentException("Loan not found.")))
+              .flatMap(dbLoan -> {
+                dbLoan.setStatusId(loan.getStatusId());
+                return loanRepository.saveLoan(dbLoan).then(mailRepository.sendMail(
+                    Mail.builder().recipientEmail(dbLoan.getEmail())
+                        .subject("Loan application number " + dbLoan.getId() +" updated.")
+                        .body("Your loan has been: " + loanStatus.getName() + ".")
+                        .build())).then();
+              }).then();
+        });
   }
 
   public Flux<Loan> getAllLoans() {
