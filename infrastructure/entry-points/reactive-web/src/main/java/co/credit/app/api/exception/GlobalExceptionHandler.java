@@ -36,9 +36,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleGeneralException(IllegalArgumentException ex) {
         log.error("An unexpected error occurred: {}", ex.getMessage(), ex);
-
-        String friendlyMessage = "The entered parameters do not match the database";
-        ErrorResponse errorResponse = new ErrorResponse(friendlyMessage, null);
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), null);
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
     }
 

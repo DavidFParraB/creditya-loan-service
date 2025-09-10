@@ -12,4 +12,6 @@ public interface LoanRepository {
     Flux<Loan> getAllLoans();
 
     Flux<Loan> getAllLoansWithPagination(LoanFilter filter);
+
+    Mono<Loan> getLoanById(Long loanId);
 }

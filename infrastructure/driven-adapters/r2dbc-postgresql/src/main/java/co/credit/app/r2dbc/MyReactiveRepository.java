@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import co.credit.app.r2dbc.entity.LoanEntity;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface MyReactiveRepository

@@ -48,4 +48,12 @@ public class MyReactiveRepositoryAdapter
         .map(this::toEntity);
   }
 
+  @Override
+  public Mono<Loan> getLoanById(Long loanId) {
+    return repository.findById(loanId)
+        .doOnSubscribe(l -> log.info("Fetching loan with id: {}", loanId))
+        .doOnNext(loan -> log.info("Found loan with ID: {}", loan.getDocument()))
+        .map(this::toEntity);
+  }
+
 }

@@ -42,6 +42,7 @@ public class RouterRest {
   public RouterFunction<ServerResponse> routerFunction(Handler handler) {
     return route(GET("/api/loan"), handler::listenGETUseCase)
         .andRoute(POST("/api/loan/filter"), handler::listenPOSTByFilterUseCase)
-        .andRoute(POST("/api/loan"), handler::listenPOSTUseCase);
+        .andRoute(POST("/api/loan"), handler::listenPOSTUseCase)
+        .andRoute(PUT("/api/loan/{id}"), handler::listenPUTUseCase);
   }
 }

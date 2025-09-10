@@ -17,7 +17,7 @@ import lombok.Setter;
 @Table(name = "loan_status")
 public class LoanStatusEntity {
   @Id
-  private Integer id;
+  private Long id;
   private String name;
   private String description;
 }

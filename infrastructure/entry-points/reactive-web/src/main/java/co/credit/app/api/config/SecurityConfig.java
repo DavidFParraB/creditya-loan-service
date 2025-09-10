@@ -25,6 +25,8 @@ public class SecurityConfig {
             .pathMatchers(HttpMethod.GET, "/api/loan").permitAll()
             .pathMatchers(HttpMethod.POST, "/api/loan/filter").permitAll()//.hasAnyRole("3")
             .pathMatchers(HttpMethod.POST, "/api/loan").hasAnyRole("2")
+            .pathMatchers(HttpMethod.PUT, "/api/loan/{id}").permitAll()
+            //.pathMatchers(HttpMethod.PUT, "/api/loan/{id}").hasAnyRole("2")
             .anyExchange().authenticated()
         )
         .addFilterAt(authorizationFilter, SecurityWebFiltersOrder.AUTHENTICATION)

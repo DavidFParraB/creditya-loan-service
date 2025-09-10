@@ -5,8 +5,8 @@ import co.credit.app.model.loan.gateways.LoanRepository;
 import co.credit.app.model.loanfilter.LoanFilter;
 import co.credit.app.model.loanreport.LoanReport;
 import co.credit.app.model.loanreport.gateways.LoanReportRepository;
+import co.credit.app.model.loanstatus.gateways.LoanStatusRepository;
 import co.credit.app.model.loantype.gateways.LoanTypeRepository;
-import co.credit.app.model.user.User;
 import co.credit.app.model.user.gateways.UserRepository;
 import co.credit.app.usecase.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,7 @@ public class LoanUseCase {
   private final LoanTypeRepository loanTypeRepository;
   private final UserRepository userRepository;
   private final LoanReportRepository loanReportService;
+  private final LoanStatusRepository loanStatusRepository;
 
   public Mono<Void> saveLoan(Loan loan) {
 
@@ -38,6 +39,22 @@ public class LoanUseCase {
             return Mono.error(new IllegalArgumentException("Invalid loan type."));
           }
         });
+  }
+
+  public Mono<Void> updateLoan(Long id, Loan loan) {
+
+    return loanStatusRepository.isValidLoanStatus(loan.getStatusId()).flatMap(isValidStatus -> {
+      if (Boolean.TRUE.equals(isValidStatus)) {
+        return loanRepository.getLoanById(id)
+            .switchIfEmpty(Mono.error(new IllegalArgumentException("Loan not found.")))
+            .flatMap(dbLoan -> {
+              dbLoan.setStatusId(loan.getStatusId());
+              return loanRepository.saveLoan(dbLoan);
+            }).then();
+      } else {
+        return Mono.error(new IllegalArgumentException("Invalid loan status."));
+      }
+    });
   }
 
   public Flux<Loan> getAllLoans() {

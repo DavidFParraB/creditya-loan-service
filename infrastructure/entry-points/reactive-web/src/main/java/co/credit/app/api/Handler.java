@@ -1,8 +1,10 @@
 package co.credit.app.api;
 
 import co.credit.app.api.dto.LoanFilterDTO;
+import co.credit.app.api.dto.LoanUpdateDTO;
 import co.credit.app.api.mapper.LoanFilterDTOMapper;
 import co.credit.app.api.mapper.LoanReportDTOMapper;
+import co.credit.app.api.mapper.LoanUpdateDTOMapper;
 import co.credit.app.usecase.auth.AuthUseCase;
 import co.credit.app.usecase.loanreport.LoanReportUseCase;
 import java.util.List;
@@ -34,6 +36,7 @@ public class Handler {
   private final LoanReportDTOMapper loanReportDTOMapper;
   private final LoanFilterDTOMapper loanFilterDTOMapper;
   private final LoanReportUseCase loanReportUseCase;
+  private final LoanUpdateDTOMapper loanUpdateDTOMapper;
 
   public Mono<ServerResponse> listenGETUseCase(ServerRequest serverRequest) {
     return loanUseCase.getAllLoans()
@@ -85,5 +88,17 @@ public class Handler {
           .bodyValue(new ErrorResponse("Unauthorized",
               List.of("Authorization header is missing or invalid")));
     }
+  }
+
+  public Mono<ServerResponse> listenPUTUseCase(ServerRequest serverRequest) {
+    String idLoan = serverRequest.pathVariable("id");
+    return serverRequest.bodyToMono(LoanUpdateDTO.class)
+        .flatMap(validatorRequest::validate)
+        .flatMap(loanDTO -> loanUseCase.updateLoan(Long.valueOf(idLoan),
+                loanUpdateDTOMapper.toModel(loanDTO))
+            .then(ServerResponse.status(HttpStatus.OK).bodyValue(new SuccessResponse(0, "OK"))))
+        .onErrorResume(ValidationError.class, e -> ServerResponse.badRequest()
+            .bodyValue(new ErrorResponse(e.getMessage(), e.getErrors())))
+        .doOnNext(loan -> log.info("Loan saved: {}", loan));
   }
 }
