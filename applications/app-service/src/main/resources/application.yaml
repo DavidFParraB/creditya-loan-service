@@ -63,9 +63,3 @@ resilience4j:
 jwt:
   secretKey: "12345678901234567890-12345678901234567890"
   expirationTime: 300
-cloud:
-  aws:
-    credentials:
-      accessKey: "AKIA34PX33CMPDSD6NOY"
-      secretKey: "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"
-      region: "us-east-2"
