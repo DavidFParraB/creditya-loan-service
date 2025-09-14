@@ -1,9 +1,9 @@
-package co.credit.app.sqsreceiver.config;
+package co.credit.app.sqs.listener.config;
 
-import java.net.URI;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import co.credit.app.sqs.listener.helper.SQSListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import reactor.core.publisher.Mono;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
 import software.amazon.awssdk.auth.credentials.ContainerCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
@@ -14,13 +14,26 @@ import software.amazon.awssdk.auth.credentials.WebIdentityTokenFileCredentialsPr
 import software.amazon.awssdk.metrics.MetricPublisher;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
+import software.amazon.awssdk.services.sqs.model.Message;
+
+import java.net.URI;
+import java.util.function.Function;
 
 @Configuration
-@ConditionalOnMissingBean(SqsAsyncClient.class)
-public class SQSReceiverConfig {
+public class SQSConfig {
 
     @Bean
-    public SqsAsyncClient configSqs(SQSSenderProperties properties, MetricPublisher publisher) {
+    public SQSListener sqsListener(SqsAsyncClient client, SQSProperties properties, Function<Message, Mono<Void>> fn) {
+        return SQSListener.builder()
+                .client(client)
+                .properties(properties)
+                .processor(fn)
+                .build()
+                .start();
+    }
+
+    @Bean
+    public SqsAsyncClient configSqs(SQSProperties properties, MetricPublisher publisher) {
         return SqsAsyncClient.builder()
                 .endpointOverride(resolveEndpoint(properties))
                 .region(Region.of(properties.region()))
@@ -40,7 +53,7 @@ public class SQSReceiverConfig {
                 .build();
     }
 
-    private URI resolveEndpoint(SQSSenderProperties properties) {
+    protected URI resolveEndpoint(SQSProperties properties) {
         if (properties.endpoint() != null) {
             return URI.create(properties.endpoint());
         }

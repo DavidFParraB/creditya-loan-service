@@ -63,3 +63,12 @@ resilience4j:
 jwt:
   secretKey: "12345678901234567890-12345678901234567890"
   expirationTime: 300
+entrypoint:
+  sqs:
+    region: "us-east-1"
+    endpoint: "http://localhost:4566"
+    queueUrl: "http://localhost:4566/000000000000/sample"
+    waitTimeSeconds: 20
+    maxNumberOfMessages: 10
+    visibilityTimeoutSeconds: 10
+    numberOfThreads: 1
