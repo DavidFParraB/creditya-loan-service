@@ -51,6 +51,8 @@ public class LoanUseCase {
         .flatMap(loanStatus -> {
           return loanRepository.getLoanById(id)
               .switchIfEmpty(Mono.error(new IllegalArgumentException("Loan not found.")))
+              .filter(dbLoan -> dbLoan.getStatusId() == 1)
+              .switchIfEmpty(Mono.error(new IllegalArgumentException("loan already validated.")))
               .flatMap(dbLoan -> {
                 dbLoan.setStatusId(loanStatus.getId());
                 return loanRepository.saveLoan(dbLoan).then(mailRepository.sendMail(

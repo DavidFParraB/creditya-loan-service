@@ -5,6 +5,7 @@ COPY . $INSTALL_DIR
 RUN gradle clean
 RUN gradle bootJar
 
+
 FROM eclipse-temurin:21-jre AS runtime
 
 ENV INSTALL_DIR=/opt/app
@@ -17,6 +18,7 @@ ARG USER_GID=$USER_UID
 WORKDIR $INSTALL_DIR
 COPY application_docker.yaml $INSTALL_DIR
 COPY --from=TEMP_BUILD_IMAGE $INSTALL_DIR/applications/app-service/build/libs/*.jar $INSTALL_DIR/app.jar
+
 
 RUN groupadd --gid "$USER_GID" "$USERNAME" \
     && useradd --uid "$USER_UID" --gid "$USER_GID" -m "$USERNAME" \

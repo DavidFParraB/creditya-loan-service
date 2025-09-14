@@ -48,4 +48,13 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse));
     }
 
+    @ExceptionHandler(NumberFormatException.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleNumberFormatException(NumberFormatException ex) {
+      log.error("Invalid input format: {}", ex.getMessage(), ex);
+
+      String friendlyMessage = "Invalid input format. Please provide valid data.";
+      ErrorResponse errorResponse = new ErrorResponse(friendlyMessage, null);
+      return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse));
+    }
+
 }

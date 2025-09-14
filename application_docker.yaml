@@ -35,6 +35,10 @@ adapter:
   restconsumer:
     timeout: 5000
     url: "http://app-auth-service:8079/api/user"
+  sqs:
+    region: "${AWS_REGION}"
+    queueUrl: "${AWS_SQS_URL}"
+    endpoint: "${AWS_SQS_URL}"
 resilience4j:
   circuitbreaker:
     instances:
