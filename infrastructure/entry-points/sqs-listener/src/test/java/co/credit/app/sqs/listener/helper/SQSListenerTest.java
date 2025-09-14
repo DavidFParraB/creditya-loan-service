@@ -2,6 +2,8 @@ package co.credit.app.sqs.listener.helper;
 
 import co.credit.app.sqs.listener.SQSProcessor;
 import co.credit.app.sqs.listener.config.SQSProperties;
+import co.credit.app.usecase.loan.LoanUseCase;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -28,6 +30,12 @@ class SQSListenerTest {
 
     @Mock
     private SQSProperties sqsProperties;
+
+    @Mock
+    private LoanUseCase loanUseCase;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
@@ -58,7 +66,7 @@ class SQSListenerTest {
         var sqsListener = SQSListener.builder()
                 .client(asyncClient)
                 .properties(sqsProperties)
-                .processor(new SQSProcessor())
+                .processor(new SQSProcessor(loanUseCase, objectMapper))
                 .operation("operation")
                 .build();
 
