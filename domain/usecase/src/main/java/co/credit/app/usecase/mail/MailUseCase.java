@@ -35,24 +35,24 @@ public class MailUseCase {
 
   private List<String> paymentPlan(Loan loan, LoanType loanType) {
     List<String> row = new ArrayList<>();
-    double saldo = loan.getAmount();
+    double balance = loan.getAmount();
     DecimalFormat df = new DecimalFormat("#.##");
-    row.add("Mes | Cuota | Interes | Abono a Capital | Saldo Restante");
-    double cuotaMensual = installmentAmount(loan.getAmount(), (loanType.getInterestRate() / (12*100)),
+    row.add("Month | Installment | Interest | Principal Payment | Remaining Balance");
+    double monthlyFee = installmentAmount(loan.getAmount(), (loanType.getInterestRate() / (12*100)),
         loan.getTerm());
 
     for (int mes = 1; mes <= loan.getTerm(); mes++) {
-      double interes = saldo * (loanType.getInterestRate() / (12*100)) ;
-      double abonoCapital = cuotaMensual - interes;
-      saldo -= abonoCapital;
+      double interes = balance * (loanType.getInterestRate() / (12*100)) ;
+      double capitalPayment = monthlyFee - interes;
+      balance -= capitalPayment;
 
-      if (mes == loan.getTerm() && saldo > 0) {
-        abonoCapital += saldo;
-        saldo = 0;
+      if (mes == loan.getTerm() && balance > 0) {
+        capitalPayment += balance;
+        balance = 0;
       }
 
-      String detalle = String.format("%d | %s | %s | %s | %s", mes, df.format(cuotaMensual),
-          df.format(interes), df.format(abonoCapital), df.format(saldo));
+      String detalle = String.format("%d | %s | %s | %s | %s", mes, df.format(monthlyFee),
+          df.format(interes), df.format(capitalPayment), df.format(balance));
       row.add(detalle);
     }
     return row;
