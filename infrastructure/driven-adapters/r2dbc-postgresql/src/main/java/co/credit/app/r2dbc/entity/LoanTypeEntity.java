@@ -1,5 +1,6 @@
 package co.credit.app.r2dbc.entity;
 
+import jakarta.persistence.Column;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -21,13 +22,13 @@ public class LoanTypeEntity {
   @Id
   private Long id;
   private String name;
-  @JsonProperty("interest_rate")
+  @Column(name = "interest_rate", nullable = false)
   private Double interestRate;
-  @JsonProperty("minimum_amount")
+  @Column(name = "minimum_amount", nullable = false)
   private Double minimumAmount;
-  @JsonProperty("maximum_amount")
+  @Column(name = "maximum_amount", nullable = false)
   private Double maximumAmount;
-  @JsonProperty("is_automatic")
+  @Column(name = "is_automatic", nullable = false)
   private Boolean isAutomatic;
 
 }

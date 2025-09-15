@@ -27,10 +27,13 @@ public class LoanTypeReactiveRepositoryAdapter
   }
 
   @Override
-  public Mono<Boolean> isValidLoanType(Long loanTypeId) {
-    log.info("Validating loan type: {}", loanTypeId);
+  public Mono<LoanType> findById(Long loanTypeId) {
+    log.info("Fetching loan type with id: {}", loanTypeId);
     return repository.findById(loanTypeId)
-        .doOnSubscribe(s -> log.info("Validating loan type: {}", loanTypeId))
-        .hasElement();
+        .doOnSubscribe(s -> log.info("Fetching loan type with id: {}", loanTypeId))
+        .map(this::toEntity)
+        .doOnNext(
+            loanType -> log.info("Found loan type with ID: {} - automatic: {}", loanType.getName(),
+                loanType.getIsAutomatic()));
   }
 }

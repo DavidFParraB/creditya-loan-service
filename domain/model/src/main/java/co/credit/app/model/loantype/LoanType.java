@@ -16,5 +16,5 @@ public class LoanType {
     private Double interestRate;
     private Double minimumAmount;
     private Double maximumAmount;
-    private Boolean isAutomaticVaalidation;
+    private Boolean isAutomatic;
 }

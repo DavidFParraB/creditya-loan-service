@@ -66,7 +66,7 @@ class MyReactiveRepositoryAdapterTest {
         when(mapper.map(loanObj, LoanEntity.class)).thenReturn(loanEntity);
         when(repository.save(loanEntity)).thenReturn(Mono.just(loanEntity));
 
-        Mono<Void> result = repositoryAdapter.saveLoan(loanObj);
+        Mono<Loan> result = repositoryAdapter.saveLoan(loanObj);
 
         StepVerifier.create(result)
                 .verifyComplete();

@@ -39,6 +39,11 @@ adapter:
     region: "us-east-2"
     queueUrl: "https://sqs.us-east-2.amazonaws.com/817100478616/SQSStatusLoan"
     endpoint: "https://sqs.us-east-2.amazonaws.com/817100478616/SQSStatusLoan"
+adapter-deb:
+    sqs:
+      region: "us-east-2"
+      queueUrl: "https://sqs.us-east-2.amazonaws.com/817100478616/SQSDebCapacity"
+      endpoint: "https://sqs.us-east-2.amazonaws.com/817100478616/SQSDebCapacity"
 resilience4j:
   circuitbreaker:
     instances:

@@ -10,6 +10,7 @@ import co.credit.app.model.loantype.gateways.LoanTypeRepository;
 import co.credit.app.model.mail.Mail;
 import co.credit.app.model.mail.gateways.MailRepository;
 import co.credit.app.model.user.gateways.UserRepository;
+import co.credit.app.usecase.debtcapacity.DebtCapacityUseCase;
 import co.credit.app.usecase.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -21,26 +22,26 @@ public class LoanUseCase {
   private final LoanRepository loanRepository;
   private final LoanTypeRepository loanTypeRepository;
   private final UserRepository userRepository;
-  private final LoanReportRepository loanReportService;
   private final LoanStatusRepository loanStatusRepository;
   private final MailRepository mailRepository;
+  private final DebtCapacityUseCase debtCapacityUseCase;
 
   public Mono<Void> saveLoan(Loan loan) {
-
-    return loanTypeRepository.isValidLoanType(loan.getLoanTypeId())
-        .flatMap(exist -> {
-          if (Boolean.TRUE.equals(exist)) {
-
-            return userRepository.findUserByDocument(loan.getDocument())
-                .flatMap(user -> {
-                  loan.setStatusId(Constants.LOAN_STATUS_PENDING);
-                  return loanRepository.saveLoan(loan);
-                }).then()
-                .onErrorResume(e -> Mono.error(new IllegalArgumentException("Invalid User.")));
-
-          } else {
-            return Mono.error(new IllegalArgumentException("Invalid loan type."));
-          }
+    return loanTypeRepository.findById(loan.getLoanTypeId())
+        .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid loan type.")))
+        .flatMap(loanType -> {
+          return userRepository.findUserByDocument(loan.getDocument())
+              .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid User.")))
+              .flatMap(user -> {
+                loan.setStatusId(Constants.LOAN_STATUS_PENDING);
+                return loanRepository.saveLoan(loan).flatMap(savedLoan -> {
+                  if (loanType.getIsAutomatic()) {
+                    loan.setId(savedLoan.getId());
+                    return debtCapacityUseCase.validateDebtCapacity(loan, loanType, user).then();
+                  }
+                  return Mono.empty();
+                }).then();
+              });
         });
   }
 
@@ -67,17 +68,4 @@ public class LoanUseCase {
   public Flux<Loan> getAllLoans() {
     return loanRepository.getAllLoans();
   }
-
-  public Flux<Loan> getAllLoansWithPagination(LoanFilter filter) {
-    return loanRepository.getAllLoansWithPagination(filter)
-        .onErrorResume(e -> Flux.error(
-            new IllegalArgumentException("Error fetching loans." + e.getMessage())));
-  }
-
-  public Flux<LoanReport> generateLoanReport(LoanFilter filter) {
-    return loanRepository.getAllLoansWithPagination(filter)
-        .flatMap(loan -> userRepository.findUserByDocument(loan.getDocument())
-            .map(user -> loanReportService.buildLoanReport(loan, user)));
-  }
-
 }

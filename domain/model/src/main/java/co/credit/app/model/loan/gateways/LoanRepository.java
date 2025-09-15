@@ -7,11 +7,13 @@ import reactor.core.publisher.Mono;
 
 public interface LoanRepository {
 
-    Mono<Void> saveLoan(Loan loan);
+    Mono<Loan> saveLoan(Loan loan);
 
     Flux<Loan> getAllLoans();
 
     Flux<Loan> getAllLoansWithPagination(LoanFilter filter);
 
     Mono<Loan> getLoanById(Long loanId);
+
+    Flux<Loan> getLoansByStatusAndDocument(Long statusId, String document);
 }

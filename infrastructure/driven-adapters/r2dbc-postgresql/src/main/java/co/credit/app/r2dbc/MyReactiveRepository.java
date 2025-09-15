@@ -18,4 +18,8 @@ public interface MyReactiveRepository
   Flux<LoanEntity> findByStatusIdWithPagination(@Param("statusId") Integer statusId,
       @Param("limit") int limit,
       @Param("offset") int offset);
+
+  @Query("SELECT * FROM loan WHERE status_id = :statusId AND document = :document")
+  Flux<LoanEntity> findByStatusIdAndDocument(@Param("statusId") Long statusId,
+      @Param("document") String document);
 }

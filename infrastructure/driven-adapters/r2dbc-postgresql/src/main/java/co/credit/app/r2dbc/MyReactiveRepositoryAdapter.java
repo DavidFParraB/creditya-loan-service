@@ -30,8 +30,8 @@ public class MyReactiveRepositoryAdapter
   }
 
   @Override
-  public Mono<Void> saveLoan(Loan loan) {
-    return repository.save(toData(loan)).then();
+  public Mono<Loan> saveLoan(Loan loan) {
+    return repository.save(toData(loan)).map(this::toEntity);
   }
 
   @Override
@@ -53,6 +53,13 @@ public class MyReactiveRepositoryAdapter
     return repository.findById(loanId)
         .doOnSubscribe(l -> log.info("Fetching loan with id: {}", loanId))
         .doOnNext(loan -> log.info("Found loan with ID: {}", loan.getDocument()))
+        .map(this::toEntity);
+  }
+
+  @Override
+  public Flux<Loan> getLoansByStatusAndDocument(Long statusId, String document) {
+    return repository.findByStatusIdAndDocument(statusId, document)
+        .doOnSubscribe(l -> log.info("Fetching loans with status: {}, document: {}", statusId, document))
         .map(this::toEntity);
   }
 
