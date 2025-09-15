@@ -4,6 +4,7 @@ import co.credit.app.model.debtcapacity.DebtCapacity;
 import co.credit.app.model.debtcapacity.gateways.DebtCapacityRepository;
 import co.credit.app.model.mail.Mail;
 import co.credit.app.model.mail.gateways.MailRepository;
+import co.credit.app.sqs.sender.config.SQSSenderDebCapacityProperties;
 import co.credit.app.sqs.sender.config.SQSSenderProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +20,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 @Log4j2
 @RequiredArgsConstructor
 public class SQSSenderDebCapacity implements DebtCapacityRepository {
-    private final SQSSenderProperties properties;
+    private final SQSSenderDebCapacityProperties properties;
     private final SqsAsyncClient client;
     private final ObjectMapper objectMapper = new ObjectMapper(); // Initialize ObjectMapper
 

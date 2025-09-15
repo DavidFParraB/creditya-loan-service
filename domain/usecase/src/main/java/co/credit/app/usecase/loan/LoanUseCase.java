@@ -11,6 +11,7 @@ import co.credit.app.model.mail.Mail;
 import co.credit.app.model.mail.gateways.MailRepository;
 import co.credit.app.model.user.gateways.UserRepository;
 import co.credit.app.usecase.debtcapacity.DebtCapacityUseCase;
+import co.credit.app.usecase.mail.MailUseCase;
 import co.credit.app.usecase.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -23,7 +24,7 @@ public class LoanUseCase {
   private final LoanTypeRepository loanTypeRepository;
   private final UserRepository userRepository;
   private final LoanStatusRepository loanStatusRepository;
-  private final MailRepository mailRepository;
+  private final MailUseCase mailUseCase;
   private final DebtCapacityUseCase debtCapacityUseCase;
 
   public Mono<Void> saveLoan(Loan loan) {
@@ -56,11 +57,12 @@ public class LoanUseCase {
               .switchIfEmpty(Mono.error(new IllegalArgumentException("loan already validated.")))
               .flatMap(dbLoan -> {
                 dbLoan.setStatusId(loanStatus.getId());
-                return loanRepository.saveLoan(dbLoan).then(mailRepository.sendMail(
-                    Mail.builder().recipientEmail(dbLoan.getEmail())
-                        .subject("Loan application number " + dbLoan.getId() +" updated.")
-                        .body("Your loan has been: " + loanStatus.getName() + ".")
-                        .build())).then();
+                return loanRepository.saveLoan(dbLoan)
+                    .flatMap(updatedLoan -> {
+                      return loanTypeRepository.findById(updatedLoan.getLoanTypeId())
+                          .flatMap(
+                              loanType -> mailUseCase.sendMail(updatedLoan, loanType, statusName));
+                    }).then();
               }).then();
         });
   }

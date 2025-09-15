@@ -18,69 +18,73 @@ import reactor.test.StepVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class MyReactiveRepositoryAdapterTest {
-    @InjectMocks
-    MyReactiveRepositoryAdapter repositoryAdapter;
 
-    @Mock
-    MyReactiveRepository repository;
+  @InjectMocks
+  MyReactiveRepositoryAdapter repositoryAdapter;
 
-    @Mock
-    ObjectMapper mapper;
+  @Mock
+  MyReactiveRepository repository;
 
-    @Test
-    @DisplayName("Findy Loan by id")
-    void findLoanByIdTest() {
-        LoanEntity loanEntity = gEntity();
-        Loan loanObj = getLoan();
-        when(repository.findById(1L)).thenReturn(Mono.just(loanEntity));
-        when(mapper.map(loanEntity, Loan.class)).thenReturn(loanObj);
+  @Mock
+  ObjectMapper mapper;
 
-        Mono<Loan> result = repositoryAdapter.findById(1L);
+  @Test
+  @DisplayName("Findy Loan by id")
+  void findLoanByIdTest() {
+    LoanEntity loanEntity = gEntity();
+    Loan loanObj = getLoan();
+    when(repository.findById(1L)).thenReturn(Mono.just(loanEntity));
+    when(mapper.map(loanEntity, Loan.class)).thenReturn(loanObj);
 
-        StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals(loanObj))
-                .verifyComplete();
-    }
+    Mono<Loan> result = repositoryAdapter.findById(1L);
 
-    @Test
-    @DisplayName("Find all loans")
-    void findAllLoansTest() {
-        LoanEntity loanEntity = gEntity();
-        Loan loanObj = getLoan();
-        when(repository.findAll()).thenReturn(Flux.just(loanEntity));
-        when(mapper.map(loanEntity, Loan.class)).thenReturn(loanObj);
+    StepVerifier.create(result)
+        .expectNextMatches(value -> value.equals(loanObj))
+        .verifyComplete();
+  }
 
-        Flux<Loan> result = repositoryAdapter.getAllLoans();
+  @Test
+  @DisplayName("Find all loans")
+  void findAllLoansTest() {
+    LoanEntity loanEntity = gEntity();
+    Loan loanObj = getLoan();
+    when(repository.findAll()).thenReturn(Flux.just(loanEntity));
+    when(mapper.map(loanEntity, Loan.class)).thenReturn(loanObj);
 
-        StepVerifier.create(result)
-                .expectNext(loanObj)
-                .verifyComplete();
-    }
+    Flux<Loan> result = repositoryAdapter.getAllLoans();
 
-    @Test
-    @DisplayName("Save loan")
-    void saveLoanTest() {
-        LoanEntity loanEntity = gEntity();
-        Loan loanObj = getLoan();
+    StepVerifier.create(result)
+        .expectNext(loanObj)
+        .verifyComplete();
+  }
 
-        when(mapper.map(loanObj, LoanEntity.class)).thenReturn(loanEntity);
-        when(repository.save(loanEntity)).thenReturn(Mono.just(loanEntity));
+  @Test
+  @DisplayName("Save loan")
+  void saveLoanTest() {
+    LoanEntity loanEntity = gEntity();
+    Loan loanObj = getLoan();
 
-        Mono<Loan> result = repositoryAdapter.saveLoan(loanObj);
+    when(mapper.map(loanObj, LoanEntity.class)).thenReturn(loanEntity);
+    when(repository.save(loanEntity)).thenReturn(Mono.just(loanEntity));
+    when(mapper.map(loanEntity, Loan.class)).thenReturn(loanObj);
 
-        StepVerifier.create(result)
-                .verifyComplete();
-    }
 
-    private LoanEntity gEntity() {
-        LoanEntity entity = new LoanEntity();
-        entity.setId(1L);
-        return entity;
-    }
+    Mono<Loan> result = repositoryAdapter.saveLoan(loanObj);
 
-    private Loan getLoan() {
-        Loan loan = new Loan();
-        loan.setId(1L);
-        return loan;
-    }
+    StepVerifier.create(result)
+        .expectNext(loanObj)
+        .verifyComplete();
+  }
+
+  private LoanEntity gEntity() {
+    LoanEntity entity = new LoanEntity();
+    entity.setId(1L);
+    return entity;
+  }
+
+  private Loan getLoan() {
+    Loan loan = new Loan();
+    loan.setId(1L);
+    return loan;
+  }
 }
