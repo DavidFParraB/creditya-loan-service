@@ -1,12 +1,11 @@
 package co.credit.app.snssender;
 
-import co.credit.app.model.mail.Mail;
-import co.credit.app.model.mail.gateways.MailRepository;
+import co.credit.app.model.loannotification.LoanNotification;
+import co.credit.app.model.loannotification.gateways.LoanNotificationRepository;
 import co.credit.app.snssender.config.SNSSenderProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ import software.amazon.awssdk.services.sns.model.PublishResponse;
 @RequiredArgsConstructor
 @Log4j2
 @Service
-public class SNSSender implements MailRepository {
+public class SNSSender implements LoanNotificationRepository {
 
   private final SnsAsyncClient snsAsyncClient;
   private final SNSSenderProperties snsSenderProperties;
@@ -35,15 +34,19 @@ public class SNSSender implements MailRepository {
   }
 
   @Override
-  public Mono<String> sendMail(Mail mail) {
-    try {
-      String jsonMessage = objectMapper.writeValueAsString(mail);
-      log.error("Mail to JSON : {} ", jsonMessage);
-      return send(jsonMessage);
-    } catch (JsonProcessingException e) {
-      log.error("Failed to convert Mail to JSON", e);
-      return Mono.error(e);
-    }
+  public Mono<String> sendLoanNotification(LoanNotification loanNotification) {
+
+    return Mono.fromCallable(() -> objectMapper.writeValueAsString(loanNotification))
+        .doOnNext(jsonMessage -> log.info("LoanNotification to JSON: {}", jsonMessage))
+        .flatMap(this::send)
+        .onErrorResume(JsonProcessingException.class, e -> {
+          log.error("Failed to convert LoanNotification to JSON", e);
+          return Mono.error(e);
+        })
+        .onErrorResume(e -> {
+          log.error("Failed to send Loan Notification to SNS", e);
+          return Mono.just("Failed to send Loan Notification to SNS");
+        });
   }
 
 }

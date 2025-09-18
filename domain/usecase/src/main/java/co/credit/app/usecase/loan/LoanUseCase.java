@@ -2,16 +2,11 @@ package co.credit.app.usecase.loan;
 
 import co.credit.app.model.loan.Loan;
 import co.credit.app.model.loan.gateways.LoanRepository;
-import co.credit.app.model.loanfilter.LoanFilter;
-import co.credit.app.model.loanreport.LoanReport;
-import co.credit.app.model.loanreport.gateways.LoanReportRepository;
 import co.credit.app.model.loanstatus.gateways.LoanStatusRepository;
 import co.credit.app.model.loantype.gateways.LoanTypeRepository;
-import co.credit.app.model.mail.Mail;
-import co.credit.app.model.mail.gateways.MailRepository;
 import co.credit.app.model.user.gateways.UserRepository;
 import co.credit.app.usecase.debtcapacity.DebtCapacityUseCase;
-import co.credit.app.usecase.mail.MailUseCase;
+import co.credit.app.usecase.loannotification.LoanNotificationUseCase;
 import co.credit.app.usecase.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -24,7 +19,7 @@ public class LoanUseCase {
   private final LoanTypeRepository loanTypeRepository;
   private final UserRepository userRepository;
   private final LoanStatusRepository loanStatusRepository;
-  private final MailUseCase mailUseCase;
+  private final LoanNotificationUseCase loanNotificationUseCase;
   private final DebtCapacityUseCase debtCapacityUseCase;
 
   public Mono<Void> saveLoan(Loan loan) {
@@ -61,7 +56,7 @@ public class LoanUseCase {
                     .flatMap(updatedLoan -> {
                       return loanTypeRepository.findById(updatedLoan.getLoanTypeId())
                           .flatMap(
-                              loanType -> mailUseCase.sendMail(updatedLoan, loanType, statusName));
+                              loanType -> loanNotificationUseCase.sendNotification(updatedLoan, loanType, statusName));
                     }).then();
               }).then();
         });

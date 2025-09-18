@@ -2,10 +2,7 @@ package co.credit.app.sqs.sender;
 
 import co.credit.app.model.debtcapacity.DebtCapacity;
 import co.credit.app.model.debtcapacity.gateways.DebtCapacityRepository;
-import co.credit.app.model.mail.Mail;
-import co.credit.app.model.mail.gateways.MailRepository;
 import co.credit.app.sqs.sender.config.SQSSenderDebCapacityProperties;
-import co.credit.app.sqs.sender.config.SQSSenderProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
