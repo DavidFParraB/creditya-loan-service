@@ -16,7 +16,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 @Service
 @Log4j2
 @RequiredArgsConstructor
-public class SQSSender implements MailRepository {
+public class SQSSender {
     private final SQSSenderProperties properties;
     private final SqsAsyncClient client;
     private final ObjectMapper objectMapper = new ObjectMapper(); // Initialize ObjectMapper
@@ -34,17 +34,5 @@ public class SQSSender implements MailRepository {
                 .queueUrl(properties.queueUrl())
                 .messageBody(message)
                 .build();
-    }
-
-    @Override
-    public Mono<String> sendMail(Mail mail) {
-      try {
-        String jsonMessage = objectMapper.writeValueAsString(mail);
-        log.error("Mail to JSON : {} ", jsonMessage);
-        return send(jsonMessage);
-      } catch (JsonProcessingException e) {
-        log.error("Failed to convert Mail to JSON", e);
-        return Mono.error(e);
-      }
     }
 }

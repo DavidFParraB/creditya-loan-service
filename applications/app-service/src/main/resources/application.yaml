@@ -39,6 +39,9 @@ adapter:
     region: "us-east-2"
     queueUrl: "https://sqs.us-east-2.amazonaws.com/817100478616/SQSStatusLoan"
     endpoint: "https://sqs.us-east-2.amazonaws.com/817100478616/SQSStatusLoan"
+  sns:
+    region: "us-east-2"
+    topicArn: "arn:aws:sns:us-east-2:817100478616:SNSLoan"
 adapter-deb:
     sqs:
       region: "us-east-2"
