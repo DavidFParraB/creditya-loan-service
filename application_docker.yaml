@@ -34,11 +34,19 @@ cors:
 adapter:
   restconsumer:
     timeout: 5000
-    url: "http://app-auth-service:8079/api/user"
+    url: "${ENDPOINT_USER_URL}"
   sqs:
     region: "${AWS_REGION}"
     queueUrl: "${AWS_SQS_URL}"
     endpoint: "${AWS_SQS_URL}"
+  sns:
+    region: "${AWS_SNS_REGION}"
+    topicArn: "${AWS_SNS_TOPIC_ARN}"
+adapter-deb:
+  sqs:
+    region: "${AWS_SQS_DEB_REGION}"
+    queueUrl: "${AWS_SQS_DEB_URL}"
+    endpoint: "${AWS_SQS_DEB_URL}"
 resilience4j:
   circuitbreaker:
     instances:
@@ -64,3 +72,12 @@ resilience4j:
 jwt:
   secretKey: "${KEY_SECRET_AUTH_JWT}"
   expirationTime: 300
+entrypoint:
+  sqs:
+    region: "${AWS_SQS_READ_REGION}"
+    endpoint: "${AWS_SQS_READ_URL}"
+    queueUrl: "${AWS_SQS_READ_QUEUE_URL}"
+    waitTimeSeconds: 20
+    maxNumberOfMessages: 10
+    visibilityTimeoutSeconds: 10
+    numberOfThreads: 1

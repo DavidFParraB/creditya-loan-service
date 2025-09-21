@@ -37,6 +37,7 @@ services:
       AWS_REGION: us-east-2
       AWS_SQS_URL: https://sqs.us-east-2.amazonaws.com/817100478616/SQSStatusLoan
       AWS_SQS_URL: https://sqs.us-east-2.amazonaws.com/817100478616/SQSStatusLoan
+      ENDPOINT_USER_URL: http://app-auth-service:8079/api/user
 
     networks:
       - crediya_network
